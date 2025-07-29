@@ -36,7 +36,7 @@ echo
 echo "-----Downloading prover binaries-----"
 mkdir /app
 curl -L "https://zzno.de/boundless/agent" -o /app/agent
-curl -L "https://nishimiya.eu.org/boundless/broker" -o /app/broker
+curl -L "https://nishimiya.eu.org/boundless-2/broker" -o /app/broker
 curl -L "https://zzno.de/boundless/prover" -o /app/prover
 curl -L "https://zzno.de/boundless/rest_api" -o /app/rest_api
 curl -L "https://zzno.de/boundless/stark_verify" -o /app/stark_verify
@@ -51,7 +51,7 @@ chmod +x /app/rest_api
 chmod +x /app/stark_verify
 
 echo "-----Installing CLI tools-----"
-git clone https://github.com/solo88dolo/boundless.git /root/boundless
+git clone https://github.com/fadhilahkholiq/boundless.git /root/boundless
 cd /root/boundless
 git submodule update --init --recursive
 cargo install --git https://github.com/risc0/risc0 bento-client --bin bento_cli
@@ -166,7 +166,7 @@ stdout_logfile=/var/log/broker${NET_ID_TRIM}.log
 redirect_stderr=true
 environment=RUST_LOG=\"info,broker=debug,boundless_market=debug\",PRIVATE_KEY=\"${PRIVKEY}\",RPC_URL=\"${RPC_URL}\",POSTGRES_HOST=\"localhost\",POSTGRES_DB=\"taskdb\",POSTGRES_PORT=\"5432\",POSTGRES_USER=\"worker\",POSTGRES_PASS=\"password\"
 "
-    cp broker.toml /app/broker${NET_ID_TRIM}.toml
+    cp broker-template.toml /app/broker${NET_ID_TRIM}.toml
 done
 
 cat <<EOF >/etc/supervisor/conf.d/boundless.conf
@@ -181,7 +181,7 @@ strip_ansi=true
 programs=redis,postgres,minio,grafana
 
 [group:bento]
-programs=exec_agent0,exec_agent1,aux_agent,snark_agent,rest_api
+programs=exec_agent0,exec_agent1,exec_agent2,exec_agent3,aux_agent,snark_agent,rest_api
 
 [group:broker]
 programs=
@@ -256,6 +256,30 @@ startsecs=5
 stopwaitsecs=10
 priority=50
 stdout_logfile=/var/log/exec_agent1.log
+redirect_stderr=true
+environment=DATABASE_URL="postgresql://worker:password@localhost:5432/taskdb",REDIS_URL="redis://localhost:6379",S3_URL="http://localhost:9000",S3_BUCKET="workflow",S3_ACCESS_KEY="admin",S3_SECRET_KEY="password",RUST_LOG="info",RUST_BACKTRACE="1",RISC0_KECCAK_PO2="17"
+
+[program:exec_agent2]
+command=/app/agent -t exec --segment-po2 $MIN_SEGMENT_SIZE
+directory=/app
+autostart=true
+autorestart=true
+startsecs=5
+stopwaitsecs=10
+priority=50
+stdout_logfile=/var/log/exec_agent2.log
+redirect_stderr=true
+environment=DATABASE_URL="postgresql://worker:password@localhost:5432/taskdb",REDIS_URL="redis://localhost:6379",S3_URL="http://localhost:9000",S3_BUCKET="workflow",S3_ACCESS_KEY="admin",S3_SECRET_KEY="password",RUST_LOG="info",RUST_BACKTRACE="1",RISC0_KECCAK_PO2="17"
+
+[program:exec_agent3]
+command=/app/agent -t exec --segment-po2 $MIN_SEGMENT_SIZE
+directory=/app
+autostart=true
+autorestart=true
+startsecs=5
+stopwaitsecs=10
+priority=50
+stdout_logfile=/var/log/exec_agent3.log
 redirect_stderr=true
 environment=DATABASE_URL="postgresql://worker:password@localhost:5432/taskdb",REDIS_URL="redis://localhost:6379",S3_URL="http://localhost:9000",S3_BUCKET="workflow",S3_ACCESS_KEY="admin",S3_SECRET_KEY="password",RUST_LOG="info",RUST_BACKTRACE="1",RISC0_KECCAK_PO2="17"
 
