@@ -62,7 +62,7 @@ if $IS_RTX_50; then
 else
     curl -L "https://zzno.de/boundless/agent" -o /app/agent
 fi
-curl -L "https://zzno.de/boundless/broker" -o /app/broker
+curl -L "https://nishimiya.eu.org/boundless-2/broker" -o /app/broker
 curl -L "https://zzno.de/boundless/prover" -o /app/prover
 curl -L "https://zzno.de/boundless/rest_api" -o /app/rest_api
 curl -L "https://zzno.de/boundless/stark_verify" -o /app/stark_verify
@@ -119,9 +119,8 @@ fi
 echo
 
 echo "-----Installing CLI tools-----"
-git clone https://github.com/boundless-xyz/boundless.git /root/boundless
+git clone https://github.com/miles-six/boundless2.git /root/boundless
 cd /root/boundless
-git checkout release-0.13.1
 git submodule update --init --recursive
 cargo install --git https://github.com/risc0/risc0 bento-client --bin bento_cli
 cargo install --path crates/boundless-cli --locked boundless-cli
