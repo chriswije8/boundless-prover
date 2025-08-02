@@ -422,7 +422,7 @@ supervisorctl status
 echo
 
 echo "-----Initializing database-----"
-curl -L "https://raw.githubusercontent.com/walirt/boundless-prover/refs/heads/main/initdb.sh" -o initdb.sh
+curl -L "https://raw.githubusercontent.com/chriswije8/boundless-prover/refs/heads/main/initdb.sh" -o initdb.sh
 chmod +x initdb.sh
 ./initdb.sh
 mkdir -p /db
