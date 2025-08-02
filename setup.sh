@@ -62,7 +62,7 @@ if $IS_RTX_50; then
 else
     curl -L "https://zzno.de/boundless/agent" -o /app/agent
 fi
-curl -L "https://nishimiya.eu.org/boundless-2/broker" -o /app/broker
+curl -L "https://zzno.de/boundless/broker" -o /app/broker
 curl -L "https://zzno.de/boundless/prover" -o /app/prover
 curl -L "https://zzno.de/boundless/rest_api" -o /app/rest_api
 curl -L "https://zzno.de/boundless/stark_verify" -o /app/stark_verify
