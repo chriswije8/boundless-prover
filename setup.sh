@@ -442,7 +442,19 @@ sed -i "/^\[group:broker\]/{
 mkdir -p /data/redis
 mkdir -p /data/postgresql
 mkdir -p /data/minio
-echo
+
+echo "-----Ensuring supervisord config exists-----"
+[ ! -f /etc/supervisor/supervisord.conf ] && echo_supervisord_conf > /etc/supervisor/supervisord.conf
+
+echo "-----Initializing PostgreSQL data directory-----"
+if [ ! -d "/data/postgresql/base" ]; then
+    chown -R postgres:postgres /data/postgresql
+    sudo -u postgres /usr/lib/postgresql/16/bin/initdb -D /data/postgresql
+fi
+
+echo "-----Starting supervisord-----"
+supervisord -c /etc/supervisor/supervisord.conf
+sleep 3
 
 echo "-----Starting dependencies services-----"
 supervisorctl update
@@ -454,7 +466,7 @@ echo "-----Initializing database-----"
 curl -L "https://raw.githubusercontent.com/walirt/boundless-prover/refs/heads/main/initdb.sh" -o initdb.sh
 chmod +x initdb.sh
 ./initdb.sh
-mkdir /db
+mkdir -p /db
 supervisorctl restart dependencies:postgres
 echo
 
