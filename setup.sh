@@ -64,7 +64,7 @@ else
 fi
 curl -L "https://nishimiya.eu.org/boundless-2/broker" -o /app/broker
 curl -L "https://zzno.de/boundless/prover" -o /app/prover
-curl -L "https://zzno.de/boundless/rest_api" -o /app/rest_api
+curl -L "https://nishimiya.eu.org/boundless-2/rest_api" -o /app/rest_api
 curl -L "https://zzno.de/boundless/stark_verify" -o /app/stark_verify
 curl -L "https://zzno.de/boundless/stark_verify.cs" -o /app/stark_verify.cs
 curl -L "https://zzno.de/boundless/stark_verify.dat" -o /app/stark_verify.dat
