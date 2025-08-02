@@ -121,10 +121,11 @@ echo
 echo "-----Installing CLI tools-----"
 git clone https://github.com/chriswije8/boundless.git /root/boundless
 cd /root/boundless
-git fetch --all --tags
-git checkout release-0.13.1
+git remote add upstream https://github.com/boundless-xyz/boundless.git
+git fetch upstream tag 0.13.1
+git checkout 0.13.1
 git submodule update --init --recursive
-cargo install --locked --git https://github.com/risc0/risc0 bento-client --bin bento_cli
+cargo install --git https://github.com/risc0/risc0 bento-client --bin bento_cli
 cargo install --path crates/boundless-cli --locked boundless-cli
 echo
 
