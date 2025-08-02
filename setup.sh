@@ -449,7 +449,7 @@ echo "-----Ensuring supervisord config exists-----"
 echo "-----Initializing PostgreSQL data directory-----"
 if [ ! -d "/data/postgresql/base" ]; then
     chown -R postgres:postgres /data/postgresql
-    su - postgres -c /usr/lib/postgresql/16/bin/initdb -D /data/postgresql
+sudo -u postgres /usr/lib/postgresql/16/bin/initdb -D /data/postgresql
 fi
 
 echo "-----Starting supervisord-----"
