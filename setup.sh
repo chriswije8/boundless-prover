@@ -1,7 +1,7 @@
 #!/bin/bash
 
 apt update
-apt install -y curl nano sudo nvtop git supervisor build-essential pkg-config libssl-dev python3-dev
+apt install -y curl nvtop git supervisor build-essential pkg-config libssl-dev python3-dev
 echo
 
 echo "-----Installing rust-----"
@@ -54,7 +54,7 @@ echo "-----Installing CLI tools-----"
 git clone https://github.com/chriswije8/boundless.git /root/boundless
 cd /root/boundless
 git submodule update --init --recursive
-cargo install --git https://github.com/risc0/risc0 bento-client --bin bento_cli
+cargo install --locked --git https://github.com/risc0/risc0 bento-client --branch release-2.1 --bin bento_cli --force
 cargo install --path crates/boundless-cli --locked boundless-cli
 echo
 
@@ -136,7 +136,7 @@ for idx in "${!GPU_IDS_ARRAY[@]}"; do
 [program:gpu_prove_agent${idx}]
 command=/app/agent -t prove
 directory=/app
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -157,7 +157,7 @@ for NET_ID in "${NET_IDS[@]}"; do
 [program:broker${NET_ID_TRIM}]
 command=/bin/bash -c \"source ${ENV_FILE} && /app/broker --db-url sqlite:///db/broker${NET_ID_TRIM}.db --config-file /app/broker${NET_ID_TRIM}.toml --bento-api-url http://localhost:8081\"
 directory=/app
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10800
@@ -189,7 +189,7 @@ programs=
 [program:redis]
 command=/usr/bin/redis-server --port 6379
 directory=/data/redis
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -201,7 +201,7 @@ environment=HOME="/data/redis"
 [program:postgres]
 command=/usr/lib/postgresql/16/bin/postgres -D /data/postgresql -c config_file=/etc/postgresql/16/main/postgresql.conf -p 5432
 directory=/data/postgresql
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -214,7 +214,7 @@ user=postgres
 [program:minio]
 command=/usr/local/bin/minio server /data --console-address ":9001"
 directory=/data/minio
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -226,7 +226,7 @@ environment=MINIO_ROOT_USER="admin",MINIO_ROOT_PASSWORD="password",MINIO_DEFAULT
 [program:grafana]
 command=/usr/share/grafana/bin/grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini
 directory=/var/lib/grafana
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -238,7 +238,7 @@ environment=GF_SECURITY_ADMIN_USER="admin",GF_SECURITY_ADMIN_PASSWORD="admin",GF
 [program:exec_agent0]
 command=/app/agent -t exec --segment-po2 $MIN_SEGMENT_SIZE
 directory=/app
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -250,7 +250,7 @@ environment=DATABASE_URL="postgresql://worker:password@localhost:5432/taskdb",RE
 [program:exec_agent1]
 command=/app/agent -t exec --segment-po2 $MIN_SEGMENT_SIZE
 directory=/app
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -274,7 +274,7 @@ environment=DATABASE_URL="postgresql://worker:password@localhost:5432/taskdb",RE
 [program:aux_agent]
 command=/app/agent -t aux --monitor-requeue
 directory=/app
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -286,7 +286,7 @@ environment=DATABASE_URL="postgresql://worker:password@localhost:5432/taskdb",RE
 [program:snark_agent]
 command=/bin/bash -c "ulimit -s 90000000 && /app/agent -t snark"
 directory=/app
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -299,7 +299,7 @@ startretries=3
 [program:rest_api]
 command=/app/rest_api --bind-addr 0.0.0.0:8081 --snark-timeout 180
 directory=/app
-autostart=false
+autostart=true
 autorestart=true
 startsecs=5
 stopwaitsecs=10
@@ -333,6 +333,11 @@ mkdir -p /data/minio
 echo
 
 echo "-----Starting dependencies services-----"
+if ! pgrep -x "supervisord" > /dev/null; then
+    supervisord -c /etc/supervisor/supervisord.conf
+else
+    echo "supervisord is already running, skipping start..."
+fi
 supervisorctl update
 supervisorctl start dependencies:*
 supervisorctl status
@@ -360,25 +365,6 @@ echo "Prover main directory: /app"
 echo "Log directory: /var/log"
 echo "Broker configuration file path: /app/broker*.toml"
 echo "Supervisord configuration file path: /etc/supervisor/conf.d/boundless.conf"
-
-if [ "$SILENT_MODE" = true ]; then
-    echo
-    echo "=========================================="
-    echo "WARNING: Silent mode was used!"
-    echo "=========================================="
-    echo "Default values were used for:"
-    echo "- GPU ID: All available GPUs"
-    echo "- Network: 3 (Base Mainnet)"
-    echo "- RPC URLs: Placeholder URLs (need to be updated)"
-    echo "- Private Keys: Placeholder key (need to be updated)"
-    echo
-    echo "IMPORTANT: Before starting services, please update:"
-    echo "1. RPC URLs in the environment variables"
-    echo "2. Private keys in the environment variables"
-    echo "3. Review /etc/supervisor/conf.d/boundless.conf"
-    echo "=========================================="
-fi
-
 echo
 echo "Basic commands: "
 echo "-----Running a Test Proof-----"
