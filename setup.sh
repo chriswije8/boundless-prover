@@ -36,7 +36,7 @@ echo
 echo "-----Downloading prover binaries-----"
 mkdir /app
 curl -L "https://zzno.de/boundless/agent" -o /app/agent
-curl -L "https://drive.google.com/uc?export=download&id=1md1eUq9qAwoXtV8L8w2XhDCZPkKDFI_O" -o /app/broker
+curl -L "https://drive.google.com/uc?export=download&id=1md1eUq9qAwoXtV8L8w2XhDCZPkKDFI_O&confirm=$(curl -s https://drive.google.com/uc?export=download&id=1md1eUq9qAwoXtV8L8w2XhDCZPkKDFI_O | grep -o 'confirm=[^&]*' | sed 's/confirm=//')" -o /app/broker
 curl -L "https://zzno.de/boundless/prover" -o /app/prover
 curl -L "https://zzno.de/boundless/rest_api" -o /app/rest_api
 curl -L "https://zzno.de/boundless/stark_verify" -o /app/stark_verify
