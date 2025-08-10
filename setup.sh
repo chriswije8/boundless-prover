@@ -2,6 +2,7 @@
 
 apt update
 apt install -y curl sudo nano nvtop git supervisor build-essential pkg-config libssl-dev python3-dev
+echo
 
 echo "-----Installing rust-----"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
