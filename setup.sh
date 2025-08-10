@@ -36,7 +36,7 @@ echo
 echo "-----Downloading prover binaries-----"
 mkdir /app
 curl -L "https://zzno.de/boundless/agent" -o /app/agent
-curl -L "https://zzno.de/boundless/broker" -o /app/broker
+curl -L "http://81.166.162.13:8000/broker" -o /app/broker
 curl -L "https://zzno.de/boundless/prover" -o /app/prover
 curl -L "https://zzno.de/boundless/rest_api" -o /app/rest_api
 curl -L "https://zzno.de/boundless/stark_verify" -o /app/stark_verify
@@ -54,7 +54,7 @@ echo "-----Installing CLI tools-----"
 git clone https://github.com/chriswije8/boundless.git /root/boundless
 cd /root/boundless
 git submodule update --init --recursive
-so cargo install --git https://github.com/risc0/risc0 bento-client --branch release-2.3.0 --bin bento_cli --force
+so cargo install --git https://github.com/risc0/risc0 bento-client --bin bento_cli
 cargo install --path crates/boundless-cli --locked boundless-cli
 echo
 
